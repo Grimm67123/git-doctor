@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "git-doctor"
+version = "1.0.0"
+description = "Diagnostic health inspector and hygiene toolkit for Git repositories."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Grimm67123"}
+]
+keywords = [
+    "git",
+    "git-tool",
+    "developer-tools",
+    "cli",
+    "devops",
+    "git-cleanup",
+    "security-scanner",
+    "code-quality",
+    "github-action"
+]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Utilities"
+]
+
+[project.scripts]
+git-doctor = "git_doctor:main"
+
+[project.urls]
+Homepage = "https://github.com/Grimm67123/git-doctor"
+Repository = "https://github.com/Grimm67123/git-doctor.git"
+Issues = "https://github.com/Grimm67123/git-doctor/issues"

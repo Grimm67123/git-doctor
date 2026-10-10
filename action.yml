@@ -1,0 +1,55 @@
+name: "git-doctor"
+description: "Inspect repository health, detect leaked secrets, find large historical bloat, and audit branch hygiene."
+author: "Grimm67123"
+branding:
+  icon: "check-circle"
+  color: "green"
+
+inputs:
+  path:
+    description: "Path to the Git repository"
+    required: false
+    default: "."
+  ci:
+    description: "Exit with code 1 if any warnings or failures exist"
+    required: false
+    default: "true"
+  strict:
+    description: "Exit with code 1 if health score is below 95"
+    required: false
+    default: "false"
+  stale-days:
+    description: "Number of days before marking an inactive branch as stale"
+    required: false
+    default: "60"
+  max-size-mb:
+    description: "Threshold in MB for large blob warnings"
+    required: false
+    default: "5.0"
+
+outputs:
+  score:
+    description: "Repository health score (0-100)"
+    value: ${{ steps.audit.outputs.score }}
+  grade:
+    description: "Repository health letter grade (A+, A, B, C, F)"
+    value: ${{ steps.audit.outputs.grade }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+
+    - name: Run git-doctor Diagnostic Audit
+      id: audit
+      shell: bash
+      run: |
+        python3 "${{ github.action_path }}/git_doctor.py" \
+          --path "${{ inputs.path }}" \
+          --stale-days "${{ inputs.stale-days }}" \
+          --max-size-mb "${{ inputs.max-size-mb }}" \
+          ${{ inputs.ci == 'true' && '--ci' || '' }} \
+          ${{ inputs.strict == 'true' && '--strict' || '' }}
