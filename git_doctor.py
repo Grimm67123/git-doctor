@@ -416,17 +416,25 @@ def check_config(repo_root):
     user_email, _ = run_git(["config", "user.email"], cwd=repo_root)
     autocrlf, _ = run_git(["config", "core.autocrlf"], cwd=repo_root)
 
+    is_ci = os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true"
+
     if not user_name:
-        status = "WARN"
-        penalty += 5
-        findings.append("user.name is not configured (commits will use system hostname)")
+        if is_ci:
+            findings.append("user.name not set on CI runner (normal in automated pipelines)")
+        else:
+            status = "WARN"
+            penalty += 5
+            findings.append("user.name is not configured (commits will use system hostname)")
     else:
         findings.append(f"Committer Name: {user_name}")
 
     if not user_email:
-        status = "WARN"
-        penalty += 5
-        findings.append("user.email is not configured (commits will lack attribution)")
+        if is_ci:
+            findings.append("user.email not set on CI runner (normal in automated pipelines)")
+        else:
+            status = "WARN"
+            penalty += 5
+            findings.append("user.email is not configured (commits will lack attribution)")
     else:
         findings.append(f"Committer Email: {user_email}")
 
