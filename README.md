@@ -63,10 +63,10 @@ Because of Git's built-in subcommand discovery, placing `git-doctor` in your `PA
 git doctor
 ```
 
-### Option 2: Install via pip
+### Option 2: Install directly via GitHub (No PyPI needed)
 
 ```bash
-pip install git-doctor
+pip install git+https://github.com/Grimm67123/git-doctor.git
 ```
 
 ### Option 3: Run with Python
