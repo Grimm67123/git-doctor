@@ -165,6 +165,9 @@ def check_branches(repo_root, default_branch, stale_days=60):
         stale_names = [f"{s['name']} ({s['days']}d)" for s in stale_branches[:4]]
         findings.append(f"{len(stale_branches)} stale branch(es) (> {stale_days} days inactive): {', '.join(stale_names)}")
 
+    if not findings:
+        findings.append("No unmerged or stale branches detected.")
+
     return {
         "category": "Branches",
         "status": status,
@@ -551,8 +554,16 @@ def format_cli_report(report, use_color=True):
     }
     g_color = grade_colors.get(report["grade"], "yellow")
 
+    # Use ASCII fallback if stdout encoding does not support emoji
+    doc_symbol = "🩺"
+    try:
+        if sys.stdout.encoding and "utf" not in sys.stdout.encoding.lower():
+            doc_symbol = "[+]"
+    except Exception:
+        doc_symbol = "[+]"
+
     lines.append(colorize("=" * w, "blue", use_color))
-    title = f"  🩺  GIT-DOCTOR REPORT  v{VERSION}  "
+    title = f"  {doc_symbol}  GIT-DOCTOR REPORT  v{VERSION}  "
     lines.append(colorize(title.center(w), "bold", use_color))
     lines.append(colorize("=" * w, "blue", use_color))
     lines.append(f" Repository : {report['repo_root']}")
@@ -638,6 +649,17 @@ def run_fix_action(repo_root, report, dry_run=False):
 
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+    if hasattr(sys.stderr, "reconfigure"):
+        try:
+            sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
     parser = argparse.ArgumentParser(
         prog="git-doctor",
         description="Diagnose, audit, and clean Git repositories for optimal health and hygiene.",
